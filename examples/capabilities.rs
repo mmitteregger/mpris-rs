@@ -1,4 +1,4 @@
-use failure::{Error, ResultExt};
+use anyhow::{Context, Result};
 use mpris::{DBusError, Player, PlayerFinder};
 use std::borrow::Cow;
 
@@ -12,17 +12,13 @@ fn main() {
     match print_capabilities_for_all_players() {
         Ok(_) => {}
         Err(error) => {
-            println!("Error: {}", error);
-            for (i, cause) in error.iter_causes().enumerate() {
-                print!("{}", "  ".repeat(i + 1));
-                println!("Caused by: {}", cause);
-            }
+            println!("Error: {:?}", error);
             std::process::exit(1);
         }
     }
 }
 
-fn print_capabilities_for_all_players() -> Result<(), Error> {
+fn print_capabilities_for_all_players() -> Result<()> {
     for player in PlayerFinder::new()
         .context("Failed to connect to D-Bus")?
         .find_all()
@@ -35,7 +31,7 @@ fn print_capabilities_for_all_players() -> Result<(), Error> {
     Ok(())
 }
 
-fn print_capabilities_for_player(player: Player<'_>) -> Result<(), Error> {
+fn print_capabilities_for_player(player: Player<'_>) -> Result<()> {
     println!(
         ">> Player: {} ({})",
         player.identity(),

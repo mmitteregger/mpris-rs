@@ -1,21 +1,17 @@
-use failure::{Error, ResultExt};
+use anyhow::{Context, Result};
 use mpris::PlayerFinder;
 
 fn main() {
     match print_metadata() {
         Ok(_) => {}
         Err(error) => {
-            println!("Error: {}", error);
-            for (i, cause) in error.iter_causes().enumerate() {
-                print!("{}", "  ".repeat(i + 1));
-                println!("Caused by: {}", cause);
-            }
+            println!("Error: {:?}", error);
             std::process::exit(1);
         }
     }
 }
 
-fn print_metadata() -> Result<(), Error> {
+fn print_metadata() -> Result<()> {
     let player_finder = PlayerFinder::new().context("Could not connect to D-Bus")?;
 
     let player = player_finder

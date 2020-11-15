@@ -1,4 +1,4 @@
-use failure::Fail;
+use thiserror::Error;
 
 use std::rc::Rc;
 
@@ -12,26 +12,20 @@ use crate::pooled_connection::PooledConnection;
 const LIST_NAMES_TIMEOUT_MS: i32 = 500;
 
 /// This enum encodes possible error cases that could happen when finding players.
-#[derive(Fail, Debug)]
+#[derive(Error, Debug)]
 pub enum FindingError {
     /// No player was found matching the requirements of the calling method.
-    #[fail(display = "No player found")]
+    #[error("No player found")]
     NoPlayerFound,
 
     /// Finding failed due to an underlying D-Bus error.
-    #[fail(display = "{}", _0)]
-    DBusError(#[cause] DBusError),
+    #[error(transparent)]
+    DBusError(#[from] DBusError),
 }
 
 impl From<dbus::Error> for FindingError {
     fn from(error: dbus::Error) -> Self {
         FindingError::DBusError(error.into())
-    }
-}
-
-impl From<DBusError> for FindingError {
-    fn from(error: DBusError) -> Self {
-        FindingError::DBusError(error)
     }
 }
 
