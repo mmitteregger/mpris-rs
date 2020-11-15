@@ -1,5 +1,4 @@
 use dbus::arg::ArgType;
-use derive_is_enum_variant::is_enum_variant;
 use enum_kinds::EnumKind;
 use from_variants::FromVariants;
 use std::collections::HashMap;
@@ -7,7 +6,7 @@ use std::collections::HashMap;
 /// Holds a dynamically-typed metadata value.
 ///
 /// You will need to type-check this at runtime in order to use the value.
-#[derive(Debug, PartialEq, Clone, EnumKind, is_enum_variant, FromVariants)]
+#[derive(Debug, PartialEq, Clone, EnumKind, FromVariants)]
 #[enum_kind(ValueKind)]
 pub enum Value {
     /// Value is a string.
@@ -431,7 +430,7 @@ mod tests {
         let message = send_value_over_dbus("Hello world!");
 
         let string: Value = message.get1().unwrap();
-        assert!(string.is_string());
+        assert!(matches!(string, Value::String(_)));
         assert_eq!(string.as_str(), Some("Hello world!"));
     }
 
@@ -440,7 +439,7 @@ mod tests {
         let message = send_value_over_dbus(dbus::Path::from("/hello/world"));
 
         let string: Value = message.get1().unwrap();
-        assert!(string.is_string());
+        assert!(matches!(string, Value::String(_)));
         assert_eq!(string.as_str(), Some("/hello/world"));
     }
 
@@ -479,7 +478,7 @@ mod tests {
         let message = send_value_over_dbus(42.0f64);
 
         let float: Value = message.get1().unwrap();
-        assert!(float.is_f64());
+        assert!(matches!(float, Value::F64(_)));
         assert_eq!(float.as_f64(), Some(42.0));
     }
 
@@ -488,7 +487,7 @@ mod tests {
         let message = send_value_over_dbus(true);
 
         let boolean: Value = message.get1().unwrap();
-        assert!(boolean.is_bool());
+        assert!(matches!(boolean, Value::Bool(_)));
         assert_eq!(boolean.as_bool(), Some(true));
     }
 
@@ -504,7 +503,7 @@ mod tests {
         let message = send_value_over_dbus(input);
 
         let array: Value = message.get1().unwrap();
-        assert!(array.is_array());
+        assert!(matches!(array, Value::Array(_)));
         assert_eq!(array.into_array(), Some(expected));
     }
 
@@ -517,7 +516,7 @@ mod tests {
         let message = send_value_over_dbus(input);
 
         let array: Value = message.get1().unwrap();
-        assert!(array.is_array());
+        assert!(matches!(array, Value::Array(_)));
         assert_eq!(array.into_array(), Some(expected));
     }
 
@@ -540,7 +539,7 @@ mod tests {
         let message = send_value_over_dbus(input);
 
         let hash: Value = message.get1().unwrap();
-        assert!(hash.is_map());
+        assert!(matches!(hash, Value::Map(_)));
         assert_eq!(hash.into_map(), Some(expected));
     }
 }
