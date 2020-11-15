@@ -123,9 +123,6 @@ impl<'a> Player<'a> {
     /// See: [MPRIS2 specification about bus names](https://specifications.freedesktop.org/mpris-spec/latest/#Bus-Name-Policy).
     pub fn bus_name_player_name_part(&self) -> &str {
         self.bus_name()
-            .as_cstr()
-            .to_str()
-            .unwrap() // `BusName` is guaranteed to be valid ASCII/UTF-8
             .trim_start_matches(MPRIS2_PREFIX)
             .split('.') // Remove the "instance" part
             .next()
